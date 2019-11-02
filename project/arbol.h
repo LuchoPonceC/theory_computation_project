@@ -15,6 +15,7 @@ private:
 	vector<string> german_accepted{"ur","gross","mutter","vater"};
 	string indermidiate_language="";
 	list<string> language;
+	list<string> traduccion;
 
 	
 	void min_max_word_size(vector<string> *&vec,int &min, int &max){
@@ -70,11 +71,28 @@ private:
 		cout<<indermidiate_language<<endl;
 	}
 
+	void translate(vector<string> *&vec_from, vector<string> *&vec_to){
+		if(language.back()!=(*vec_from)[2] and language.back()!=(*vec_from)[3]) throw exception();
+		if(language.back()==(*vec_from)[2]){traduccion.push_front((*vec_to)[2]);}
+		if(language.back()==(*vec_from)[3]){traduccion.push_front((*vec_to)[3]);}
+		if(language.size()>1){traduccion.push_front((*vec_to)[1]);}
+		for(int i=0;i<(int)language.size()-2;i++){
+			//cout<<"es infinito"<<endl;
+			traduccion.push_front((*vec_to)[0]);
+		}
+		for(auto it : traduccion){
+			std::cout<<it<<" ";
+		}
+		cout<<endl;
+
+	}
+
+
 public:
 
-	bool indermidiate_translate(string word,int lang){
+	void indermidiate_translate(string &word,int lang){
 		if(lang!=english and lang != german) throw exception();
-		vector<string> *vec;
+		vector<string> *vec = nullptr;
 		if(lang==english){
 			vec = &english_accepted;
 		}
@@ -84,7 +102,6 @@ public:
 		string temp_word="";
 		int min,max;
 		min_max_word_size(vec,min,max);
-		cout<<min<<" - "<<max<<endl;
 		for(auto it : word){
 
 			temp_word+=it;
@@ -98,6 +115,38 @@ public:
 		}
 
 		intermidiate();
+
+	}
+
+	void translate(string word, int lang_from, int lang_to){
+		language.clear();
+		indermidiate_translate(word,lang_from);
+		translate(lang_from, lang_to);
+	}
+	void translate(int lang_from, int lang_to){
+		if((lang_from!=english and lang_from!=german) or (lang_to!=german and lang_to!=english)) throw exception();
+		vector<string> *vec_from = nullptr;
+		vector<string> *vec_to = nullptr;
+		if(lang_from==english){
+			vec_from = &english_accepted;
+			if(lang_to==english){
+				vec_to = &english_accepted;
+			}
+			else{
+				vec_to = &german_accepted;
+			}
+			
+		}
+		else{
+			vec_from = &german_accepted;
+			if(lang_to==english){
+				vec_to = &english_accepted;
+			}
+			else{
+				vec_to = &german_accepted;
+			}
+		}
+		translate(vec_from,vec_to);
 
 	}
 
