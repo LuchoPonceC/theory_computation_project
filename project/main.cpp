@@ -7,7 +7,7 @@ int main(){
 	string palabra;
 	cin>>palabra;
 	//arb.indermidiate_translate(palabra,english);
-	arb.translate(palabra,german,english);
+	arb.translate(palabra,english,german);
 
 	return 0;
 }

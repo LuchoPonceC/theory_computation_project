@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <iostream>
+#include <queue>
 
 #define english 0
 #define german 1
@@ -15,151 +16,231 @@ private:
 	vector<string> english_accepted{"great","grand","mother","father"};
 	vector<string> german_accepted{"ur","gross","mutter","vater"};
 	string indermidiate_language="";
+	
 	list<string> language;
 	list<string> traduccion;
 
 	
-	void min_max_word_size(vector<string> *&vec,int &min, int &max){
-		if(vec->size()<0) throw exception();
-		min=vec[0].size();
-		max=vec[0].size();
-		for(auto it : *vec){
-			if(it.size()<min){
-				min = it.size();
-			}
-			if(it.size()>max){
-				max = it.size();
-			}
-		}
-	}
+	void min_max_word_size(vector<string> *&vec,int &min, int &max);
 
-	bool check_word(vector<string> *&vec,string &temp_word,int &min,int &max){
-		if(temp_word.size()>max) throw exception();
-		if(temp_word.size()<min) return false;
-		if(find(vec->begin(),vec->end(),temp_word)==vec->end()) return false;
-		return true;
-	}
+	string get_word(queue<string> &accepted_words);
 
-	bool check_priority(vector<string> *&vec, string &temp_word){
-		if(language.empty()){
-			language.push_front(temp_word);
-			return true;
-		}
-		if(language.back()==(*vec)[0]){
-			if(temp_word == (*vec)[0] or temp_word == (*vec)[1]){
-				language.push_back(temp_word);
-				return true;
-			}
-		}
-		if(language.back()==(*vec)[1]){
-			if(temp_word == (*vec)[2] or temp_word == (*vec)[3]){
-				language.push_back(temp_word);
-				return true;
-			}
-		}
+	bool check_word(vector<string> *&vec,string &temp_word,int &min,int &max);
 
-		return false;
+	bool check_priority(vector<string> *&vec, queue<string> &accepted_words);
 
-	}
+	bool rule_A(vector<string> *&vec, queue<string> &accepted_words);
 
-	bool check_last_word(vector<string> *&vec){
-		return (((*vec)[vec->size()-1] == language.back()) or ((*vec)[vec->size()-1])==language.back());
-	}
+	bool rule_B(vector<string> *&vec, queue<string> &accepted_words);
 
-	void intermidiate(){
-		
-		indermidiate_language += ((language.back()).substr(0,2)+"()");
-		
-		for(int i=0;i<language.size()-1;i++){
-			indermidiate_language = "g("+indermidiate_language+")"; 
-		}
+	bool rule_C(vector<string> *&vec, queue<string> &accepted_words);
 
-		cout<<indermidiate_language<<endl;
-	}
+	bool rule_D(vector<string> *&vec, queue<string> &accepted_words);
 
-	void translate(vector<string> *&vec_from, vector<string> *&vec_to){
-		if(language.back()!=(*vec_from)[2] and language.back()!=(*vec_from)[3]) throw exception();
-		if(language.back()==(*vec_from)[2]){traduccion.push_front((*vec_to)[2]);}
-		if(language.back()==(*vec_from)[3]){traduccion.push_front((*vec_to)[3]);}
-		if(language.size()>1){traduccion.push_front((*vec_to)[1]);}
-		for(int i=0;i<(int)language.size()-2;i++){
+	void intermidiate();
 
-			traduccion.push_front((*vec_to)[0]);
-		}
-		for(auto it : traduccion){
-			std::cout<<it<<" ";
-		}
-		cout<<endl;
-
-	}
-
-
-
+	void translate(vector<string> *&vec_from, vector<string> *&vec_to);
 
 public:
 
-	void indermidiate_translate(string &word,int lang){
-		if(lang!=english and lang != german) throw exception();
-		vector<string> *vec = nullptr;
-		if(lang==english){
-			vec = &english_accepted;
-		}
-		else{
-			vec = &german_accepted;
-		}
-		string temp_word="";
-		int min,max;
-		min_max_word_size(vec,min,max);
-		for(auto it : word){
+	void indermidiate_translate(string &word,int lang);
 
-			temp_word+=it;
+	void translate(string word, int lang_from, int lang_to);
 
-			if(check_word(vec,temp_word,min,max)){
-
-				if(!check_priority(vec,temp_word)) throw exception();
-
-				temp_word="";
-			}
-		}
-
-		if(!(check_last_word(vec))) throw exception();
-
-		intermidiate();
-
-	}
-
-	void translate(string word, int lang_from, int lang_to){
-		language.clear();
-		indermidiate_translate(word,lang_from);
-		translate(lang_from, lang_to);
-	}
-
-	
-	void translate(int lang_from, int lang_to){
-		if((lang_from!=english and lang_from!=german) or (lang_to!=german and lang_to!=english)) throw exception();
-		vector<string> *vec_from = nullptr;
-		vector<string> *vec_to = nullptr;
-		if(lang_from==english){
-			vec_from = &english_accepted;
-			if(lang_to==english){
-				vec_to = &english_accepted;
-			}
-			else{
-				vec_to = &german_accepted;
-			}
-		}
-
-		else{
-			vec_from = &german_accepted;
-			if(lang_to==english){
-				vec_to = &english_accepted;
-			}
-			else{
-				vec_to = &german_accepted;
-			}
-		}
-		translate(vec_from,vec_to);
-
-	}
+	void translate(int lang_from, int lang_to);
 
 };
+
+
+
+void Arbol::min_max_word_size(vector<string> *&vec,int &min, int &max){
+	if(vec->size()<0) throw exception();
+	min=vec[0].size();
+	max=vec[0].size();
+	for(auto it : *vec){
+		if(it.size()<min){
+			min = it.size();
+		}
+		if(it.size()>max){
+			max = it.size();
+		}
+	}
+}
+
+
+
+string Arbol::get_word(queue<string> &accepted_words){
+	string temp = accepted_words.front();
+	accepted_words.pop();
+	return temp;
+}
+
+
+
+bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max){
+	if(temp_word.size()>max) throw exception();
+	if(temp_word.size()<min) return false;
+	if(find(vec->begin(),vec->end(),temp_word)==vec->end()) return false;
+	return true;
+}
+
+
+
+bool Arbol::check_priority(vector<string> *&vec, queue<string> &accepted_words){
+	return rule_A(vec,accepted_words);
+}
+
+
+
+bool Arbol::rule_A(vector<string> *&vec, queue<string> &accepted_words){
+
+	string temp = get_word(accepted_words);
+	if(temp == (*vec)[0]){
+		return rule_B(vec,accepted_words);
+	}
+	if(temp == (*vec)[1]){
+		return rule_C(vec,accepted_words);
+	}
+	if(temp == (*vec)[2]){
+		return rule_D(vec,accepted_words);
+	}
+	if(temp == (*vec)[3]){
+		return rule_D(vec,accepted_words);
+	}
+	return 0;
+}
+
+
+
+bool Arbol::rule_B(vector<string> *&vec, queue<string> &accepted_words){
+	string temp = get_word(accepted_words);
+
+	if(temp == (*vec)[0]){
+		return rule_B(vec,accepted_words);
+	}
+	if(temp == (*vec)[1]){
+		return rule_C(vec,accepted_words);
+	}
+	return 0;
+}
+
+
+
+bool Arbol::rule_C(vector<string> *&vec, queue<string> &accepted_words){
+	string temp = get_word(accepted_words);
+	if(temp == (*vec)[2]){
+		return rule_D(vec,accepted_words);
+	}
+	if(temp == (*vec)[3]){
+		return rule_D(vec,accepted_words);
+	}
+	return 0;
+}
+
+
+
+bool Arbol::rule_D(vector<string> *&vec, queue<string> &accepted_words){
+	return accepted_words.empty();
+}
+
+
+
+void Arbol::intermidiate(){
+	
+	indermidiate_language += ((language.back()).substr(0,2)+"()");
+	
+	for(int i=0;i<language.size()-1;i++){
+		indermidiate_language = "g("+indermidiate_language+")"; 
+	}
+
+	cout<<indermidiate_language<<endl;
+}
+
+
+
+void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
+	if(language.back()!=(*vec_from)[2] and language.back()!=(*vec_from)[3]) throw exception();
+	if(language.back()==(*vec_from)[2]){traduccion.push_front((*vec_to)[2]);}
+	if(language.back()==(*vec_from)[3]){traduccion.push_front((*vec_to)[3]);}
+	if(language.size()>1){traduccion.push_front((*vec_to)[1]);}
+	for(int i=0;i<(int)language.size()-2;i++){
+
+		traduccion.push_front((*vec_to)[0]);
+	}
+	for(auto it : traduccion){
+		std::cout<<it<<" ";
+	}
+	cout<<endl;
+}
+
+
+
+void Arbol::indermidiate_translate(string &word,int lang){
+	if(lang!=english and lang != german) throw exception();
+	vector<string> *vec = nullptr;
+	queue<string> accepted_words;
+	if(lang==english){
+		vec = &english_accepted;
+	}
+	else{
+		vec = &german_accepted;
+	}
+	string temp_word="";
+	int min,max;
+	min_max_word_size(vec,min,max);
+	for(auto it : word){
+
+		temp_word+=it;
+
+		if(check_word(vec,temp_word,min,max)){
+
+			accepted_words.push(temp_word);
+			language.push_back(temp_word);
+
+			temp_word="";
+		}
+	}
+
+	if(!(check_priority(vec,accepted_words))) throw exception();
+	
+
+	intermidiate();
+
+}
+
+
+
+void Arbol::translate(string word, int lang_from, int lang_to){
+	language.clear();
+	indermidiate_translate(word,lang_from);
+	translate(lang_from, lang_to);
+}
+
+
+
+void Arbol::translate(int lang_from, int lang_to){
+	if((lang_from!=english and lang_from!=german) or (lang_to!=german and lang_to!=english)) throw exception();
+	vector<string> *vec_from = nullptr;
+	vector<string> *vec_to = nullptr;
+	if(lang_from==english){
+		vec_from = &english_accepted;
+		if(lang_to==english){
+			vec_to = &english_accepted;
+		}
+		else{
+			vec_to = &german_accepted;
+		}
+	}
+
+	else{
+		vec_from = &german_accepted;
+		if(lang_to==english){
+			vec_to = &english_accepted;
+		}
+		else{
+			vec_to = &german_accepted;
+		}
+	}
+	translate(vec_from,vec_to);
+
+}
