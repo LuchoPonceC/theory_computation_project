@@ -7,6 +7,7 @@
 
 #define english 0
 #define german 1
+
 using namespace std;
 
 class Arbol{
@@ -56,8 +57,13 @@ private:
 				return true;
 			}
 		}
+
 		return false;
 
+	}
+
+	bool check_last_word(vector<string> *&vec){
+		return (((*vec)[vec->size()-1] == language.back()) or ((*vec)[vec->size()-1])==language.back());
 	}
 
 	void intermidiate(){
@@ -77,7 +83,7 @@ private:
 		if(language.back()==(*vec_from)[3]){traduccion.push_front((*vec_to)[3]);}
 		if(language.size()>1){traduccion.push_front((*vec_to)[1]);}
 		for(int i=0;i<(int)language.size()-2;i++){
-			//cout<<"es infinito"<<endl;
+
 			traduccion.push_front((*vec_to)[0]);
 		}
 		for(auto it : traduccion){
@@ -86,6 +92,8 @@ private:
 		cout<<endl;
 
 	}
+
+
 
 
 public:
@@ -114,6 +122,8 @@ public:
 			}
 		}
 
+		if(!(check_last_word(vec))) throw exception();
+
 		intermidiate();
 
 	}
@@ -123,6 +133,8 @@ public:
 		indermidiate_translate(word,lang_from);
 		translate(lang_from, lang_to);
 	}
+
+	
 	void translate(int lang_from, int lang_to){
 		if((lang_from!=english and lang_from!=german) or (lang_to!=german and lang_to!=english)) throw exception();
 		vector<string> *vec_from = nullptr;
@@ -135,8 +147,8 @@ public:
 			else{
 				vec_to = &german_accepted;
 			}
-			
 		}
+
 		else{
 			vec_from = &german_accepted;
 			if(lang_to==english){
