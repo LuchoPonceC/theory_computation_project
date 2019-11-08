@@ -5,7 +5,10 @@
 #include <unordered_map>
 #include <iostream>
 #include <queue>
-
+#include <istream>
+#include <sstream>
+#define pro_ancestral 1
+#define pro_traduccion 2
 #define english 0
 #define german 1
 
@@ -13,10 +16,10 @@ using namespace std;
 
 class Arbol{
 private:
-	vector<string> english_accepted{"great","grand","mother","father","the","for","Mary","John"};
+	vector<string> english_accepted{"great","grand","mother","father","the","of","Mary","John"};
 	vector<string> german_accepted{"von","ur","gross","mutter","vater","Die","Der","Die","Eine"};
 	string indermidiate_language="";
-	
+	int traduction_type;
 	list<string> language;
 	list<string> traduccion;
 
@@ -48,6 +51,8 @@ private:
 	void translate(vector<string> *&vec_from, vector<string> *&vec_to);
 
 
+	void translatexp(vector<string> *&vec_from,vector<string> *&vec_to);
+
 	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
 	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
 	bool rule_C1(vector<string> *&vec, queue<string> &accepted_words);
@@ -66,10 +71,11 @@ public:
 
 	//Recibe la palabra, y el numero(ingles o aleman) del lenguaje de entrada y el numero(ingles o aleman) del lenguaje al que sera traducido
 	//y traduce a cada palabra de ingles o aleman ya previamente evaluado al otro lenguaje.
-	void translate(string word, int lang_from, int lang_to);
+	void translate(string word, int lang_from, int lang_to, int trad);
 
 
-	void translatexp(string word,int lang_from,int lang_to);
+	void translatexp(string word,int lang_from,int lang_to,int trad);
+
 	void translatexp(int lang_from,int lang_to);
 
 };
@@ -115,7 +121,17 @@ bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max)
 
 
 bool Arbol::check_priority(vector<string> *&vec, queue<string> &accepted_words){
-	return rule_A(vec,accepted_words);
+	if(accepted_words.empty()) throw exception();
+	if(traduction_type == pro_ancestral){
+		//cout<<"entro en ancestral"<<endl;
+		return rule_A(vec,accepted_words);
+	}
+	if(traduction_type == pro_traduccion){
+		//cout<<"entro en traduccion"<<endl;
+		return rule_S(vec,accepted_words);
+
+	}
+
 }
 
 
@@ -201,10 +217,9 @@ void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
 	cout<<endl;
 }
 
-
-
 void Arbol::indermidiate_translate(string &word,int lang){
-	
+	//std::cout<<word<<endl;
+	vector<string> words;
 	vector<string> *vec = nullptr;
 	queue<string> accepted_words;
 	if(lang==english){
@@ -213,37 +228,55 @@ void Arbol::indermidiate_translate(string &word,int lang){
 	else{
 		vec = &german_accepted;
 	}
+	istringstream newword(word);
+	while(newword>>word){
+		words.push_back(word);
+	}
+	
 	string temp_word="";
 	int min,max;
 	min_max_word_size(vec,min,max);
-	for(auto it : word){
 
-		temp_word+=it;
 
-		if(check_word(vec,temp_word,min,max)){
-
-			accepted_words.push(temp_word);
-			language.push_back(temp_word);
-
-			temp_word="";
+	for(auto value : words){
+		//cout<<"esta palbra esta leyendo: "<<value<<endl;
+		for(auto it : value){
+			temp_word+=it;
+			if(check_word(vec,temp_word,min,max)){
+				accepted_words.push(temp_word);
+				language.push_back(temp_word);
+				//cout<<"esto esta pusheando en la cola: "<<value<<endl;
+				temp_word="";
+			}
 		}
+		temp_word="";
 	}
-
-	//Throw que en caso que todas la pabras si esten en el lenguaje, se procede a evaluar su procedencia "gramatica de chomsky" (creo)
-	if(!(check_priority(vec,accepted_words))) throw exception();
 	
 
+	//std::cout<<accepted_words.size()<<endl;
+
+	//Throw que en caso que todas la pabras si esten en el lenguaje, se procede a evaluar su procedencia "gramatica de chomsky" (creo)
+
+	if(!(check_priority(vec,accepted_words))) throw exception();
+}
+
+
+void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
+	for(auto it : language){
+		std::cout<<it<<" ";
+	}
+	cout<<endl;
 
 }
 
 
-
-void Arbol::translate(string word, int lang_from, int lang_to){
+void Arbol::translate(string word, int lang_from, int lang_to, int trad){
+	traduction_type = trad;
 	//Throw que al recibir dos inputs(que son lengaujes) te bota throw si algun lenguaje(como numero) no existe
-	if((lang_from!=english or lang_from!=german) and (lang_from != german or lang_to!=english)) throw exception();
+	//if((lang_from!=english or lang_from!=german) and (lang_from != german or lang_to!=english)) throw exception();
 	language.clear();
 	indermidiate_translate(word,lang_from);
-	intermidiate();
+	//intermidiate();
 	translate(lang_from, lang_to);
 }
 
@@ -267,11 +300,22 @@ void Arbol::translate(int lang_from, int lang_to){
 	translate(vec_from,vec_to);
 
 }
-void Arbol::translatexp(string word, int lang_from, int lang_to){
+void Arbol::translatexp(string word, int lang_from, int lang_to, int trad){
+	traduction_type=trad;
 	language.clear();
 	indermidiate_translate(word,lang_from);
 	//intermidiate(); no se necestta
 	translatexp(lang_from, lang_to);
+}
+
+void Arbol::translatexp(int lang_from, int lang_to){
+	vector<string> *vec_from = nullptr;
+	vector<string> *vec_to = nullptr;
+	if (lang_from==english){
+		vec_from=&english_accepted;
+	}
+	vec_to=&german_accepted;
+	translatexp(vec_from,vec_to);
 }
 
 bool Arbol::rule_S(vector<string> *&vec, queue<string> &accepted_words){
