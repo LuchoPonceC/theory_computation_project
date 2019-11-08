@@ -13,8 +13,8 @@ using namespace std;
 
 class Arbol{
 private:
-	vector<string> english_accepted{"great","grand","mother","father"};
-	vector<string> german_accepted{"ur","gross","mutter","vater"};
+	vector<string> english_accepted{"great","grand","mother","father","the","for","Mary","John"};
+	vector<string> german_accepted{"von","ur","gross","mutter","vater","Die","Der","Die","Eine"};
 	string indermidiate_language="";
 	
 	list<string> language;
@@ -41,6 +41,12 @@ private:
 
 	void translate(vector<string> *&vec_from, vector<string> *&vec_to);
 
+	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_C1(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_D1(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_E1(vector<string> *&vec, queue<string> &accepted_words);
+
 public:
 
 	void indermidiate_translate(string &word,int lang);
@@ -49,12 +55,14 @@ public:
 
 	void translate(int lang_from, int lang_to);
 
+	void translatexp(string word,int lang_from,int lang_to);
+	void translatexp(int lang_from,int lang_to);
 };
 
 
 
 void Arbol::min_max_word_size(vector<string> *&vec,int &min, int &max){
-	if(vec->size()<0) throw exception();
+	//if(vec->size()<0) throw exception();
 	min=vec[0].size();
 	max=vec[0].size();
 	for(auto it : *vec){
@@ -134,7 +142,7 @@ bool Arbol::rule_C(vector<string> *&vec, queue<string> &accepted_words){
 	if(temp == (*vec)[3]){
 		return rule_D(vec,accepted_words);
 	}
-	return 0;
+	return -1;
 }
 
 
@@ -204,7 +212,6 @@ void Arbol::indermidiate_translate(string &word,int lang){
 	if(!(check_priority(vec,accepted_words))) throw exception();
 	
 
-	intermidiate();
 
 }
 
@@ -213,6 +220,7 @@ void Arbol::indermidiate_translate(string &word,int lang){
 void Arbol::translate(string word, int lang_from, int lang_to){
 	language.clear();
 	indermidiate_translate(word,lang_from);
+	intermidiate();
 	translate(lang_from, lang_to);
 }
 
@@ -244,3 +252,62 @@ void Arbol::translate(int lang_from, int lang_to){
 	translate(vec_from,vec_to);
 
 }
+void Arbol::translatexp(string word, int lang_from, int lang_to){
+	language.clear();
+	indermidiate_translate(word,lang_from);
+	//intermidiate(); no se necestta
+	translatexp(lang_from, lang_to);
+}
+void Arbol::translatexp(int lang_from, int lang_to){
+
+}
+bool Arbol::rule_S(vector<string> *&vec, queue<string> &accepted_words){
+	//hacer un find por palabra temp = find(vec,"The")
+	string temp = get_word(accepted_words);
+	if (temp==(*vec)[4]){
+		return rule_B1(vec,accepted_words);
+	}
+	return 0;
+
+}
+bool Arbol::rule_B1(vector<string> *&vec, queue<string> &accepted_words){
+	string temp = get_word(accepted_words);
+	if (temp==(*vec)[2]){
+		return rule_C1(vec,accepted_words);
+	}
+	if (temp==(*vec)[3]){
+		return rule_C1(vec,accepted_words);
+	}
+	return 0;
+}
+bool Arbol::rule_C1(vector<string> *&vec, queue<string> &accepted_words){
+	string temp = get_word(accepted_words);
+	if (temp==(*vec)[5]){
+		return rule_D1(vec,accepted_words);
+	}
+	if (temp==(*vec)[5]){
+		return rule_S(vec,accepted_words);
+	}
+	return 0;
+	
+}
+bool Arbol::rule_D1(vector<string> *&vec, queue<string> &accepted_words){
+	string temp = get_word(accepted_words);
+	if (temp==(*vec)[6]){
+		return rule_E1(vec,accepted_words);
+	}
+	if (temp==(*vec)[7]){
+		return rule_E1(vec,accepted_words);
+	}
+	return 0;
+}
+
+bool Arbol::rule_E1(vector<string> *&vec, queue<string> &accepted_words){
+	return accepted_words.empty();
+}
+
+
+
+
+
+
