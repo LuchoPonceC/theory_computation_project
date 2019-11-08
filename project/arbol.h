@@ -20,13 +20,16 @@ private:
 	list<string> language;
 	list<string> traduccion;
 
-	
+	//Encuentras el minimo y maximo tamanio de las palabras del vector enviado (lenguaje -> english_accepted o german_accepted)
 	void min_max_word_size(vector<string> *&vec,int &min, int &max);
 
+	//Devuelves la palabra que se encuentra en la cola y lo elimina, sirve para verificar si la palabra es valida
 	string get_word(queue<string> &accepted_words);
 
+	//verivida si la palabra se encuentra en el diccionario, si es menor al diccionario sigue pidiendo data, si es mayor al diccionario se rompe, si esta en el diccionario pasa
 	bool check_word(vector<string> *&vec,string &temp_word,int &min,int &max);
 
+	//verifica las formas normales de chomsky y llama a la regla numero 1
 	bool check_priority(vector<string> *&vec, queue<string> &accepted_words);
 
 	bool rule_A(vector<string> *&vec, queue<string> &accepted_words);
@@ -37,23 +40,34 @@ private:
 
 	bool rule_D(vector<string> *&vec, queue<string> &accepted_words);
 
+	//imprime el legunaje intermedio : g(g(g(g(mo()))))
 	void intermidiate();
 
+	//Traduce realmente el lenguaje que ya paso por la gramatica y fue aceptado a su respectiva traduccion previamente solicitada
+	//tracude urgrossvater a greatgrandfather, traduce greatgrandfather a urgrossvater dependiendo de a que se quiere traducir
 	void translate(vector<string> *&vec_from, vector<string> *&vec_to);
+
+	//Ejecuta el algoritmo principal del parser 
+	void indermidiate_translate(string &word,int lang);
+
+
+	//Recibe los lenguajes como numero-> 0 ingles y 1 aleman. Luego estos envian sus respectivos vectores from y to a la funcion
+	void translate(int lang_from, int lang_to);
+
+	
 
 public:
 
-	void indermidiate_translate(string &word,int lang);
-
+	//Recibe la palabra, y el numero(ingles o aleman) del lenguaje de entrada y el numero(ingles o aleman) del lenguaje al que sera traducido
+	//y traduce a cada palabra de ingles o aleman ya previamente evaluado al otro lenguaje.
 	void translate(string word, int lang_from, int lang_to);
-
-	void translate(int lang_from, int lang_to);
 
 };
 
 
 
 void Arbol::min_max_word_size(vector<string> *&vec,int &min, int &max){
+	//throw que verifica si los vectores aleman o ingles  estan vacios, si esta vacion manda un throw
 	if(vec->size()<0) throw exception();
 	min=vec[0].size();
 	max=vec[0].size();
@@ -78,6 +92,8 @@ string Arbol::get_word(queue<string> &accepted_words){
 
 
 bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max){
+	//throw que si la palabra es mayor en tamaño a la palabra mas grande de mi arreglo de posibles palabras, significa que hay un error
+	//por el tamaño.
 	if(temp_word.size()>max) throw exception();
 	if(temp_word.size()<min) return false;
 	if(find(vec->begin(),vec->end(),temp_word)==vec->end()) return false;
@@ -159,7 +175,7 @@ void Arbol::intermidiate(){
 
 
 void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
-	if(language.back()!=(*vec_from)[2] and language.back()!=(*vec_from)[3]) throw exception();
+	//if(language.back()!=(*vec_from)[2] and language.back()!=(*vec_from)[3]) throw exception();
 	if(language.back()==(*vec_from)[2]){traduccion.push_front((*vec_to)[2]);}
 	if(language.back()==(*vec_from)[3]){traduccion.push_front((*vec_to)[3]);}
 	if(language.size()>1){traduccion.push_front((*vec_to)[1]);}
@@ -176,7 +192,7 @@ void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
 
 
 void Arbol::indermidiate_translate(string &word,int lang){
-	if(lang!=english and lang != german) throw exception();
+	
 	vector<string> *vec = nullptr;
 	queue<string> accepted_words;
 	if(lang==english){
@@ -201,6 +217,7 @@ void Arbol::indermidiate_translate(string &word,int lang){
 		}
 	}
 
+	//Throw que en caso que todas la pabras si esten en el lenguaje, se procede a evaluar su procedencia "gramatica de chomsky" (creo)
 	if(!(check_priority(vec,accepted_words))) throw exception();
 	
 
@@ -211,6 +228,8 @@ void Arbol::indermidiate_translate(string &word,int lang){
 
 
 void Arbol::translate(string word, int lang_from, int lang_to){
+	//Throw que al recibir dos inputs(que son lengaujes) te bota throw si algun lenguaje(como numero) no existe
+	if((lang_from!=english or lang_from!=german) and (lang_from != german or lang_to!=english)) throw exception();
 	language.clear();
 	indermidiate_translate(word,lang_from);
 	translate(lang_from, lang_to);
@@ -219,28 +238,20 @@ void Arbol::translate(string word, int lang_from, int lang_to){
 
 
 void Arbol::translate(int lang_from, int lang_to){
-	if((lang_from!=english and lang_from!=german) or (lang_to!=german and lang_to!=english)) throw exception();
+	
 	vector<string> *vec_from = nullptr;
 	vector<string> *vec_to = nullptr;
+
 	if(lang_from==english){
 		vec_from = &english_accepted;
-		if(lang_to==english){
-			vec_to = &english_accepted;
-		}
-		else{
-			vec_to = &german_accepted;
-		}
+		vec_to = &german_accepted;	
 	}
 
 	else{
 		vec_from = &german_accepted;
-		if(lang_to==english){
-			vec_to = &english_accepted;
-		}
-		else{
-			vec_to = &german_accepted;
-		}
+		vec_to = &english_accepted;	
 	}
+
 	translate(vec_from,vec_to);
 
 }
