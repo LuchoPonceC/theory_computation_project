@@ -17,7 +17,7 @@ using namespace std;
 class Arbol{
 private:
 	vector<string> english_accepted{"great","grand","mother","father","the","of","Mary","John"};
-	vector<string> german_accepted{"von","ur","gross","mutter","vater","Die","Der","Die","Eine"};
+	vector<string> german_accepted{"ur","gross","mutter","vater","Die","Der","Die","Eine"};
 	string indermidiate_language="";
 	int traduction_type;
 	list<string> language;
@@ -43,6 +43,16 @@ private:
 
 	bool rule_D(vector<string> *&vec, queue<string> &accepted_words);
 
+	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
+
+	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
+
+	bool rule_C1(vector<string> *&vec, queue<string> &accepted_words);
+
+	bool rule_D1(vector<string> *&vec, queue<string> &accepted_words);
+
+	bool rule_E1(vector<string> *&vec, queue<string> &accepted_words);
+
 	//imprime el legunaje intermedio : g(g(g(g(mo()))))
 	void intermidiate();
 
@@ -53,11 +63,7 @@ private:
 
 	void translatexp(vector<string> *&vec_from,vector<string> *&vec_to);
 
-	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_C1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_D1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_E1(vector<string> *&vec, queue<string> &accepted_words);
+	
 
 public:
 
@@ -212,7 +218,7 @@ void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
 		traduccion.push_front((*vec_to)[0]);
 	}
 	for(auto it : traduccion){
-		std::cout<<it<<" ";
+		std::cout<<it;
 	}
 	cout<<endl;
 }
@@ -263,7 +269,7 @@ void Arbol::indermidiate_translate(string &word,int lang){
 
 void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
 	for(auto it : language){
-		std::cout<<it<<" ";
+		std::cout<<it;
 	}
 	cout<<endl;
 

@@ -14,8 +14,8 @@ int main(){
 	cin.ignore();
 	cout<<"INGRESE LA PALABRA ";getline(cin,palabra);
 	if(numero==1){
-		//arb.translate(palabra,english,german,pro_ancestral);
-		arb.translatexp(palabra,english,german,pro_traduccion);
+		arb.translate(palabra,english,german,pro_ancestral);
+		//arb.translatexp(palabra,english,german,pro_traduccion);
 	}
 	else if(numero == 2){
 		arb.translate(palabra,german,english,pro_ancestral);
