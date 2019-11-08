@@ -13,8 +13,8 @@ using namespace std;
 
 class Arbol{
 private:
-	vector<string> english_accepted{"great","grand","mother","father","the","for","Mary","John"};
-	vector<string> german_accepted{"von","ur","gross","mutter","vater","Die","Der","Die","Eine"};
+	vector<string> english_accepted{"great","grand","mother","father","the","of","Mary","John"};
+	vector<string> german_accepted{"ur","gross","mutter","vater","Die","Der","Eine","Ein","von","Maria","Johann"};
 	string indermidiate_language="";
 	
 	list<string> language;
@@ -40,7 +40,7 @@ private:
 	void intermidiate();
 
 	void translate(vector<string> *&vec_from, vector<string> *&vec_to);
-
+	int posEnDicc(vector<string> *&vec,string word);
 	void translatexp(vector<string> *&vec_from,vector<string> *&vec_to);
 	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
 	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
@@ -206,11 +206,29 @@ void Arbol::indermidiate_translate(string &word,int lang){
 	}
 	if(!(check_priority(vec,accepted_words))) throw exception();
 }
-void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
-	for(auto it : language){
-		std::cout<<it<<" ";
+
+int Arbol::posEnDicc(string<vector> dic,string word){
+	vector<string>::iterator it = std::find(dic.begin(),dic.end(),word);
+	if (it != dic.end()){
+		return std::distance(dic.begin(), it);
 	}
-	cout<<endl;
+	else
+		return -1 ;
+}
+void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
+	//for mother, father 
+	if (language.back()==(*vec_from)[6]){traduccion.push_front((*vec_to)[10];)}
+	if (language.back()==(*vec_from)[7]){traduccion.push_front((*vec_to)[11];)}
+	//for of 
+	if (language[language.size()-1] ==(*vec_from)[5]){
+		traduccion.push_front((*vec_to[9]))
+	}
+	//para 4 
+	if (){}
+	//para 7
+	if (){}
+
+	//para 10 a más 
 
 }
 
