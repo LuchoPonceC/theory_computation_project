@@ -41,6 +41,7 @@ private:
 
 	void translate(vector<string> *&vec_from, vector<string> *&vec_to);
 
+	void translatexp(vector<string> *&vec_from,vector<string> *&vec_to);
 	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
 	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
 	bool rule_C1(vector<string> *&vec, queue<string> &accepted_words);
@@ -56,6 +57,7 @@ public:
 	void translate(int lang_from, int lang_to);
 
 	void translatexp(string word,int lang_from,int lang_to);
+
 	void translatexp(int lang_from,int lang_to);
 };
 
@@ -181,8 +183,6 @@ void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
 	cout<<endl;
 }
 
-
-
 void Arbol::indermidiate_translate(string &word,int lang){
 	if(lang!=english and lang != german) throw exception();
 	vector<string> *vec = nullptr;
@@ -197,24 +197,22 @@ void Arbol::indermidiate_translate(string &word,int lang){
 	int min,max;
 	min_max_word_size(vec,min,max);
 	for(auto it : word){
-
 		temp_word+=it;
-
 		if(check_word(vec,temp_word,min,max)){
-
 			accepted_words.push(temp_word);
 			language.push_back(temp_word);
-
 			temp_word="";
 		}
 	}
-
 	if(!(check_priority(vec,accepted_words))) throw exception();
-	
-
+}
+void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
+	for(auto it : language){
+		std::cout<<it<<" ";
+	}
+	cout<<endl;
 
 }
-
 
 
 void Arbol::translate(string word, int lang_from, int lang_to){
@@ -259,7 +257,13 @@ void Arbol::translatexp(string word, int lang_from, int lang_to){
 	translatexp(lang_from, lang_to);
 }
 void Arbol::translatexp(int lang_from, int lang_to){
-
+	vector<string> *vec_from = nullptr;
+	vector<string> *vec_to = nullptr;
+	if (lang_from==english){
+		vec_from=&english_accepted;
+	}
+	vec_to=&german_accepted;
+	translatexp(vec_from,vec_to);
 }
 bool Arbol::rule_S(vector<string> *&vec, queue<string> &accepted_words){
 	//hacer un find por palabra temp = find(vec,"The")
