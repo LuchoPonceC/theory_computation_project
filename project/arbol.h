@@ -85,7 +85,7 @@ public:
 void Arbol::min_max_word_size(vector<string> *&vec,int &min, int &max){
 
 	//throw que verifica si los vectores aleman o ingles  estan vacios, si esta vacion manda un throw
-	if(vec->size()<0) throw exception();
+	if(vec->size()<0) throw 1;
 
 	min=vec[0].size();
 	max=vec[0].size();
@@ -112,7 +112,7 @@ string Arbol::get_word(queue<string> &accepted_words){
 bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max){
 	//throw que si la palabra es mayor en tamaño a la palabra mas grande de mi arreglo de posibles palabras, significa que hay un error
 	//por el tamaño.
-	if(temp_word.size()>max) throw exception();
+	if(temp_word.size()>max) throw 2;
 	if(temp_word.size()<min) return false;
 	if(find(vec->begin(),vec->end(),temp_word)==vec->end()) return false;
 	return true;
@@ -121,7 +121,7 @@ bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max)
 
 
 bool Arbol::check_priority(vector<string> *&vec, queue<string> &accepted_words){
-	if(accepted_words.empty()) throw exception();
+	if(accepted_words.empty()) throw 3;
 	if(traduction_type == pro_ancestral){
 		//cout<<"entro en ancestral"<<endl;
 		return rule_A(vec,accepted_words);
@@ -214,7 +214,7 @@ void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
 	for(auto it : traduccion){
 		std::cout<<it<<" ";
 	}
-	cout<<endl;
+	cout<<endl;throw 10;
 }
 
 void Arbol::indermidiate_translate(string &word,int lang){
@@ -257,7 +257,7 @@ void Arbol::indermidiate_translate(string &word,int lang){
 
 	//Throw que en caso que todas la pabras si esten en el lenguaje, se procede a evaluar su procedencia "gramatica de chomsky" (creo)
 
-	if(!(check_priority(vec,accepted_words))) throw exception();
+	if(!(check_priority(vec,accepted_words))) throw 4;
 }
 
 
@@ -266,7 +266,7 @@ void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
 		std::cout<<it<<" ";
 	}
 	cout<<endl;
-
+	throw 10;
 }
 
 
