@@ -300,19 +300,18 @@ void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
 				traduccion.push_front((*vec_to)[1]+(*vec_to)[2]);
 				traduccion.push_front((*vec_to)[6]);
 				
-			}
+			}else {
 			int numUR =(size-7)/3 ; 
 			string cad = "";
 			for (int n=0; n<numUR;n++){
-				cad += "ur" ; 
+				cad += (*vec_to)[0] ; 
 			}
 			cad = cad + (*vec_to)[1] + (*vec_to)[2];
 				traduccion.push_front(cad);
 				traduccion.push_front((*vec_to)[6]);
-
+			}
 		}
 	}
-
 	if (frase[1] == (*vec_from)[3]){
 		if (size==4){
 			traduccion.push_front((*vec_to)[3]);
@@ -322,15 +321,16 @@ void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
 			if (size==7){
 				traduccion.push_front((*vec_to)[1]+(*vec_to)[3]);
 				traduccion.push_front((*vec_to)[7]);
-			}
+			}else{
 			int numUR =(size-7)/3 ; 
 			string cad = "";
 			for (int n=0; n<numUR;n++){
-				cad += "ur" ; 
+				cad += (*vec_to)[0] ; 
 			}
 			cad = cad + (*vec_to)[1] + (*vec_to)[3];
 				traduccion.push_front(cad);
 				traduccion.push_front((*vec_to)[7]);
+			}
 		}
 	}
 	//para 7
