@@ -52,12 +52,12 @@ private:
 	int posEnDicc(vector<string> &vec,string word);
 	void translatexp(vector<string> *&vec_from,vector<string> *&vec_to);
 
-	bool rule_S(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_S1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_B1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_C1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_D1(vector<string> *&vec, queue<string> &accepted_words);
-	bool rule_E1(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_S(vector<string> *&vec, queue<string> accepted_words);
+	bool rule_S1(vector<string> *&vec, queue<string> accepted_words);
+	bool rule_B1(vector<string> *&vec, queue<string> accepted_words);
+	bool rule_C1(vector<string> *&vec, queue<string> accepted_words);
+	bool rule_D1(vector<string> *&vec, queue<string> accepted_words);
+	bool rule_E1(vector<string> *&vec, queue<string> accepted_words);
 
 public:
 
@@ -269,46 +269,78 @@ int Arbol::posEnDicc(vector<string> &dic,string word){
 		return -1 ;
 }
 void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
-	list<string>::iterator it = std::next(language.begin(),0);
-	int size = language.size();
+	vector<string> frase;
+	for (string const &c : language)
+		frase.push_back(c);
 	
-	for (auto it: language)
+	int size = frase.size();
+	for (auto it: frase)
 		std::cout<<it<<" ";
-
-
+	cout<<size<<endl;
 	//for mary, jhon
-	
-	if (language.back()==(*vec_from)[7]){
+	if (frase.back()==(*vec_from)[7]){
 		traduccion.push_front((*vec_to)[9]) ;
 	}
-	if (language.back()==(*vec_from)[8]){
+	if (frase.back()==(*vec_from)[8]){
 		traduccion.push_front((*vec_to)[10]);
 	}
 	//for of 
-	it = next(language.begin(),size-1);
-	if (*it ==(*vec_from)[6]){
+	if (frase[size-2] ==(*vec_from)[6]){
 		traduccion.push_front((*vec_to)[8]);
 	}
 	//para 4  (mather, father)
-	it = next(language.begin(),2);
-	if (*it == (*vec_from)[2]){
-			traduccion.push_front((*vec_to)[2]);
-	}
-	traduccion.push_front((*vec_to)[4]);
 
-	it = next(language.begin(),3);
-	if (*it == (*vec_from)[3]){
-			traduccion.push_front((*vec_to)[3]);
+	if (frase[1] == (*vec_from)[2]){
+		if (size==4){
+			traduccion.push_front((*vec_to)[2]);
+			traduccion.push_front((*vec_to)[4]);
+		}
+		else {
+			if (size==7){
+				traduccion.push_front((*vec_to)[1]+(*vec_to)[2]);
+				traduccion.push_front((*vec_to)[6]);
+				
+			}
+			int numUR =(size-7)/3 ; 
+			string cad = "";
+			for (int n=0; n<numUR;n++){
+				cad += "ur" ; 
+			}
+			cad = cad + (*vec_to)[1] + (*vec_to)[2];
+				traduccion.push_front(cad);
+				traduccion.push_front((*vec_to)[6]);
+
+		}
 	}
-	traduccion.push_front((*vec_to)[5]);
+
+	if (frase[1] == (*vec_from)[3]){
+		if (size==4){
+			traduccion.push_front((*vec_to)[3]);
+			traduccion.push_front((*vec_to)[5]);
+		}
+		else {
+			if (size==7){
+				traduccion.push_front((*vec_to)[1]+(*vec_to)[3]);
+				traduccion.push_front((*vec_to)[7]);
+			}
+			int numUR =(size-7)/3 ; 
+			string cad = "";
+			for (int n=0; n<numUR;n++){
+				cad += "ur" ; 
+			}
+			cad = cad + (*vec_to)[1] + (*vec_to)[3];
+				traduccion.push_front(cad);
+				traduccion.push_front((*vec_to)[7]);
+		}
+	}
 	//para 7
+	
 
 	//para 10 a más 
 	for(auto it : traduccion){
 		std::cout<<it<<" ";
 	}
 	cout<<endl;
-
 }
 
 
@@ -360,7 +392,7 @@ void Arbol::translatexp(int lang_from, int lang_to){
 	translatexp(vec_from,vec_to);
 }
 
-bool Arbol::rule_S(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_S(vector<string> *&vec, queue<string> accepted_words){
 	//hacer un find por palabra temp = find(vec,"The")
 	string temp = get_word(accepted_words);
 	if (temp==(*vec)[4]){
@@ -369,7 +401,7 @@ bool Arbol::rule_S(vector<string> *&vec, queue<string> &accepted_words){
 	return 0;
 
 }
-bool Arbol::rule_S1(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_S1(vector<string> *&vec, queue<string> accepted_words){
 	string temp = get_word(accepted_words);
 	if (temp==(*vec)[5]){
 		return rule_B1(vec,accepted_words);
@@ -378,7 +410,7 @@ bool Arbol::rule_S1(vector<string> *&vec, queue<string> &accepted_words){
 
 }
 
-bool Arbol::rule_B1(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_B1(vector<string> *&vec, queue<string> accepted_words){
 	string temp = get_word(accepted_words);
 	if (temp==(*vec)[2]){
 		return rule_C1(vec,accepted_words);
@@ -388,10 +420,14 @@ bool Arbol::rule_B1(vector<string> *&vec, queue<string> &accepted_words){
 	}
 	return 0;
 }
-bool Arbol::rule_C1(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_C1(vector<string> *&vec, queue<string> accepted_words){
 	string temp = get_word(accepted_words);
+
 	if (temp==(*vec)[6]){
-		return rule_D1(vec,accepted_words);
+		bool i =rule_D1(vec,accepted_words);
+		if (i==true){
+		return true;
+		}	
 	}
 	if (temp==(*vec)[6]){
 		return rule_S1(vec,accepted_words);
@@ -399,7 +435,7 @@ bool Arbol::rule_C1(vector<string> *&vec, queue<string> &accepted_words){
 	return 0;
 	
 }
-bool Arbol::rule_D1(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_D1(vector<string> *&vec, queue<string> accepted_words){
 	string temp = get_word(accepted_words);
 	if (temp==(*vec)[7]){
 		return rule_E1(vec,accepted_words);
@@ -410,7 +446,7 @@ bool Arbol::rule_D1(vector<string> *&vec, queue<string> &accepted_words){
 	return 0;
 }
 
-bool Arbol::rule_E1(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_E1(vector<string> *&vec, queue<string> accepted_words){
 	return accepted_words.empty();
 }
 
