@@ -33,15 +33,15 @@ private:
 	bool check_word(vector<string> *&vec,string &temp_word,int &min,int &max);
 
 	//verifica las formas normales de chomsky y llama a la regla numero 1
-	bool check_priority(vector<string> *&vec, queue<string> &accepted_words);
+	bool check_priority(vector<string> *&vec, queue<string> accepted_words);
 
-	bool rule_A(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_A(vector<string> *&vec, queue<string> accepted_words);
 
-	bool rule_B(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_B(vector<string> *&vec, queue<string> accepted_words);
 
-	bool rule_C(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_C(vector<string> *&vec, queue<string> accepted_words);
 
-	bool rule_D(vector<string> *&vec, queue<string> &accepted_words);
+	bool rule_D(vector<string> *&vec, queue<string> accepted_words);
 
 	//imprime el legunaje intermedio : g(g(g(g(mo()))))
 	void intermidiate();
@@ -85,7 +85,7 @@ public:
 void Arbol::min_max_word_size(vector<string> *&vec,int &min, int &max){
 
 	//throw que verifica si los vectores aleman o ingles  estan vacios, si esta vacion manda un throw
-	//if(vec->size()<0) throw exception();
+	if(vec->size()<0) throw 1 ;
 
 	min=vec[0].size();
 	max=vec[0].size();
@@ -112,7 +112,7 @@ string Arbol::get_word(queue<string> &accepted_words){
 bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max){
 	//throw que si la palabra es mayor en tamaño a la palabra mas grande de mi arreglo de posibles palabras, significa que hay un error
 	//por el tamaño.
-	if(temp_word.size()>max) throw exception();
+	if(temp_word.size()>max) throw 2;
 	if(temp_word.size()<min) return false;
 	if(find(vec->begin(),vec->end(),temp_word)==vec->end()) return false;
 	return true;
@@ -120,8 +120,8 @@ bool Arbol::check_word(vector<string> *&vec,string &temp_word,int &min,int &max)
 
 
 
-bool Arbol::check_priority(vector<string> *&vec, queue<string> &accepted_words){
-	if(accepted_words.empty()) throw exception();
+bool Arbol::check_priority(vector<string> *&vec, queue<string> accepted_words){
+	if(accepted_words.empty()) throw 3;
 	if(traduction_type == pro_ancestral){
 		//cout<<"entro en ancestral"<<endl;
 		return rule_A(vec,accepted_words);
@@ -136,8 +136,8 @@ bool Arbol::check_priority(vector<string> *&vec, queue<string> &accepted_words){
 
 
 
-bool Arbol::rule_A(vector<string> *&vec, queue<string> &accepted_words){
-
+bool Arbol::rule_A(vector<string> *&vec, queue<string> accepted_words){
+	if(accepted_words.empty()) throw 3;
 	string temp = get_word(accepted_words);
 	if(temp == (*vec)[0]){
 		return rule_B(vec,accepted_words);
@@ -156,7 +156,8 @@ bool Arbol::rule_A(vector<string> *&vec, queue<string> &accepted_words){
 
 
 
-bool Arbol::rule_B(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_B(vector<string> *&vec, queue<string> accepted_words){
+	if(accepted_words.empty()) throw 3;
 	string temp = get_word(accepted_words);
 
 	if(temp == (*vec)[0]){
@@ -170,7 +171,8 @@ bool Arbol::rule_B(vector<string> *&vec, queue<string> &accepted_words){
 
 
 
-bool Arbol::rule_C(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_C(vector<string> *&vec, queue<string> accepted_words){
+	if(accepted_words.empty()) throw 3;
 	string temp = get_word(accepted_words);
 	if(temp == (*vec)[2]){
 		return rule_D(vec,accepted_words);
@@ -178,12 +180,12 @@ bool Arbol::rule_C(vector<string> *&vec, queue<string> &accepted_words){
 	if(temp == (*vec)[3]){
 		return rule_D(vec,accepted_words);
 	}
-	return -1;
+	return 0;
 }
 
 
 
-bool Arbol::rule_D(vector<string> *&vec, queue<string> &accepted_words){
+bool Arbol::rule_D(vector<string> *&vec, queue<string> accepted_words){
 	return accepted_words.empty();
 }
 
@@ -212,9 +214,9 @@ void Arbol::translate(vector<string> *&vec_from, vector<string> *&vec_to){
 		traduccion.push_front((*vec_to)[0]);
 	}
 	for(auto it : traduccion){
-		std::cout<<it<<" ";
+		std::cout<<it<<"";
 	}
-	cout<<endl;
+	cout<<endl; throw 10;
 }
 
 void Arbol::indermidiate_translate(string &word,int lang){
@@ -253,11 +255,11 @@ void Arbol::indermidiate_translate(string &word,int lang){
 	}
 	
 
-	//std::cout<<accepted_words.size()<<endl;
+	
 
 	//Throw que en caso que todas la pabras si esten en el lenguaje, se procede a evaluar su procedencia "gramatica de chomsky" (creo)
 
-	if(!(check_priority(vec,accepted_words))) throw exception();
+	if(!(check_priority(vec,accepted_words))) throw 4;
 }
 
 int Arbol::posEnDicc(vector<string> &dic,string word){
@@ -340,7 +342,7 @@ void Arbol::translatexp(vector<string> *&vec_from, vector<string> *&vec_to){
 	for(auto it : traduccion){
 		std::cout<<it<<" ";
 	}
-	cout<<endl;
+	cout<<endl;throw 10;
 }
 
 
